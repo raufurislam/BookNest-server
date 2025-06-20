@@ -1,3 +1,4 @@
+// books.model.ts
 import { model, Schema } from "mongoose";
 import { IBook } from "../interfaces/books.interface";
 
