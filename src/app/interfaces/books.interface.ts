@@ -1,3 +1,5 @@
+import { Model } from "mongoose";
+
 // books.interface.ts;
 export interface IBook {
   title: string;
@@ -13,4 +15,11 @@ export interface IBook {
   description: string;
   copies: number;
   available: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Custom static method type
+export interface BookModel extends Model<IBook> {
+  borrowBook(bookId: string, quantity: number): Promise<IBook>;
 }

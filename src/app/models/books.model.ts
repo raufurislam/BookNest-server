@@ -1,8 +1,8 @@
 // books.model.ts
 import { model, Schema } from "mongoose";
-import { IBook } from "../interfaces/books.interface";
+import { BookModel, IBook } from "../interfaces/books.interface";
 
-const booksSchema = new Schema<IBook>(
+const bookSchema = new Schema<IBook>(
   {
     title: {
       type: String,
@@ -65,4 +65,31 @@ const booksSchema = new Schema<IBook>(
   }
 );
 
-export const Book = model<IBook>("Note", booksSchema);
+// ✅ Static method to handle borrow update
+bookSchema.statics.borrowBook = async function (
+  bookId: string,
+  quantity: number
+) {
+  const book = await this.findById(bookId);
+
+  if (!book) {
+    throw new Error("Book not found");
+  }
+
+  if (book.copies < quantity) {
+    throw new Error("Not enough copies available");
+  }
+
+  book.copies -= quantity;
+
+  if (book.copies === 0) {
+    book.available = false;
+  }
+
+  await book.save();
+  return book;
+};
+
+export const Book = model<IBook, BookModel>("Book", bookSchema);
+
+// export const Book = model<IBook>("Note", booksSchema);
