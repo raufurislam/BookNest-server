@@ -36,7 +36,7 @@ const bookSchema = new Schema<IBook>(
     isbn: {
       type: String,
       required: [true, "ISBN is required"],
-      unique: true, // 👈 Must be there
+      unique: true,
       trim: true,
     },
     description: {
@@ -64,9 +64,6 @@ const bookSchema = new Schema<IBook>(
   }
 );
 
-// Ensure the unique index is created
-bookSchema.index({ isbn: 1 }, { unique: true });
-
 // ✅ Static method to handle borrow update
 bookSchema.statics.borrowBook = async function (
   bookId: string,
@@ -92,23 +89,6 @@ bookSchema.statics.borrowBook = async function (
   return book;
 };
 
-// Pre-save middleware to ensure ISBN uniqueness
-bookSchema.pre("save", async function (next) {
-  if (this.isModified("isbn")) {
-    // Use the Book model directly to access findOne
-    const existingBook = await Book.findOne({
-      isbn: this.isbn,
-      _id: { $ne: this._id },
-    });
-
-    if (existingBook) {
-      const error = new Error("ISBN must be unique");
-      error.name = "ValidationError";
-      return next(error);
-    }
-  }
-  next();
-});
 export const Book = model<IBook, BookModel>("Book", bookSchema);
 
 // export const Book = model<IBook>("Note", booksSchema);

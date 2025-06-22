@@ -1,33 +1,46 @@
 // borrow.controller.ts
-import express, { Request, Response } from "express";
-import { Book } from "../models/books.model";
+import express, { NextFunction, Request, Response } from "express";
 import { Borrow } from "../models/borrow.model";
 
 export const borrowRoutes = express.Router();
 
-borrowRoutes.post("/", async (req: Request, res: Response, next) => {
-  try {
-    const { book: bookId, quantity, dueDate } = req.body;
+// to wrap async route handlers and forward errors to next()
+function asyncHandler(
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
+) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
 
-    // Update book stock using static method
-    const book = await Book.borrowBook(bookId, quantity);
+// create a borrow
+borrowRoutes.post(
+  "/",
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { book, quantity, dueDate } = req.body || {};
 
-    // ✅ Create borrow record
-    const borrowRecord = await Borrow.create({
-      book: (book as any)._id,
-      quantity,
-      dueDate,
-    });
+    // ✅ Manual check
+    if (!book || !quantity || !dueDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        error: {
+          name: "ValidationError",
+          fields: { book, quantity, dueDate },
+        },
+      });
+    }
+
+    // ✅ Create borrow record (triggers pre/post hooks)
+    const borrowRecord = await Borrow.create({ book, quantity, dueDate });
 
     res.status(201).json({
       success: true,
-      message: "Book created successfully",
+      message: "Book borrowed successfully",
       data: borrowRecord,
     });
-  } catch (err) {
-    next(err);
-  }
-});
+  })
+);
 
 // Summary of all borrowed books
 borrowRoutes.get("/", async (req: Request, res: Response, next) => {
@@ -41,7 +54,7 @@ borrowRoutes.get("/", async (req: Request, res: Response, next) => {
       },
       {
         $lookup: {
-          from: "books", // 🔁 must match actual MongoDB collection name (lowercase, plural)
+          from: "books",
           localField: "_id",
           foreignField: "_id",
           as: "bookInfo",

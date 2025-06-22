@@ -1,26 +1,8 @@
 // books.controller.ts
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { Book } from "../models/books.model";
 
 export const booksRoutes = express.Router();
-
-// create book data
-// booksRoutes.post("/", async (req: Request, res: Response, next) => {
-//   try {
-//     const body = req.body;
-//     const book = await Book.create(body);
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Book created successfully",
-//       data: book,
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
-// create book data
 
 // Create book
 booksRoutes.post(
@@ -28,20 +10,6 @@ booksRoutes.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const body = req.body;
-
-      // Check for duplicate ISBN
-      const existingBook = await Book.findOne({ isbn: body.isbn });
-      if (existingBook) {
-        return res.status(400).json({
-          success: false,
-          message: "ISBN must be unique",
-          error: {
-            name: "DuplicateKeyError",
-            field: "isbn",
-            value: body.isbn,
-          },
-        });
-      }
 
       const book = await Book.create(body);
 

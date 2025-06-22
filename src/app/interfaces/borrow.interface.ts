@@ -1,9 +1,11 @@
-// borrow.interface.ts
-import { Types } from "mongoose";
+import { Model, Types } from "mongoose";
 
-export interface IBorrow {
-  quantity: number;
-  dueDate: string;
-
+export interface IBorrowBooks {
   book: Types.ObjectId;
+  quantity: number;
+  dueDate: Date;
+}
+
+export interface BorrowLogicStatic extends Model<IBorrowBooks> {
+  deductCopies(bookId: string, quantity: number): Promise<void>;
 }
