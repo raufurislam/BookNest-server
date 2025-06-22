@@ -4,9 +4,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/server.js",
+    "start:prod": "nodemon dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "npx tsc",
-    "lint": "npx eslint src --ext .ts,.tsx",
+    "build": "tsc",
+    "lint": "npx eslint",
     "lint:fix": "npx eslint src --fix",
     "format": "npx prettier --write .",
     "test": "echo \"Error: no test specified\" && exit 1"
