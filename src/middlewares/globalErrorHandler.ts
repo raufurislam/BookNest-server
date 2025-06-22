@@ -1,47 +1,43 @@
+// globalErrorHandler.ts
 import { ErrorRequestHandler } from "express";
-import mongoose from "mongoose";
 
 export const globalErrorHandler: ErrorRequestHandler = (
   err,
   req,
   res,
   next
-) => {
-  let statusCode = 500;
-  let message = "Something went wrong";
+): void => {
+  // 🛑 Handle Duplicate Key Error
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyValue)[0];
+    const value = err.keyValue[field];
 
-  // ✅ Mongoose Validation Error
-  if (err.name === "ValidationError") {
-    statusCode = 400;
-    message = "Validation failed";
-
-    res.status(statusCode).json({
+    res.status(400).json({
       success: false,
-      message,
+      message: `${field} must be unique`,
       error: {
-        name: err.name,
-        errors: err.errors,
+        name: "DuplicateKeyError",
+        field,
+        value,
       },
     });
     return;
   }
 
-  // ✅ CastError (e.g., invalid ObjectId)
-  if (err.name === "CastError") {
-    statusCode = 400;
-    message = `Invalid ${err.path}: ${err.value}`;
+  // 🛠 Handle Validation Error
+  if (err.name === "ValidationError") {
+    res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      error: err,
+    });
+    return;
   }
 
-  // ✅ Duplicate Key Error
-  if (err.code === 11000) {
-    statusCode = 400;
-    const field = Object.keys(err.keyValue)[0];
-    message = `${field} must be unique`;
-  }
-
-  res.status(statusCode).json({
+  // 🔧 Default fallback
+  res.status(500).json({
     success: false,
-    message,
-    error: err,
+    message: "Something went wrong",
+    error: err.message || err,
   });
 };
