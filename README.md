@@ -1,205 +1,235 @@
-# Library Management API
+# 📚 Library Management API
 
-A simple Library Management System built with Express.js, TypeScript, and MongoDB.
+A robust, TypeScript-powered RESTful API for managing books and borrowing records in a library system. Built with Express.js, MongoDB, and Mongoose.
 
-## 🚀 Features
-
-- ✅ **CRUD Operations** - Create, read, update, and delete books
-- ✅ **Book Borrowing** - Borrow books with quantity tracking and due dates
-- ✅ **Smart Filtering** - Filter books by genre, sort by different fields
-- ✅ **Aggregation Pipeline** - Get borrowed books summary with total quantities
-- ✅ **Business Logic** - Automatic availability control when borrowing
-- ✅ **Input Validation** - Comprehensive validation with Zod and Validator
-- ✅ **Error Handling** - Clear error messages for all scenarios
-
-## 📋 Prerequisites
-
-- Node.js (v16 or higher)
-- MongoDB (v4.4 or higher)
-- npm or yarn
-
-## 🛠️ Installation
-
-1. **Clone the repository**
-   \`\`\`bash
-   git clone <your-repo-url>
-   cd library-management-api
-   \`\`\`
-
-2. **Install dependencies**
-   \`\`\`bash
-   npm install
-   \`\`\`
-
-3. **Setup environment variables**
-   \`\`\`bash
-   cp .env.example .env
-   \`\`\`
-
-   Update the `.env` file:
-   \`\`\`env
-   PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/library-management
-   NODE_ENV=development
-   \`\`\`
-
-4. **Start the application**
-   \`\`\`bash
-
-   # Development mode
-
-   npm run dev
-
-   # Production mode
-
-   npm run build
-   npm start
-   \`\`\`
-
-## 📚 API Endpoints
-
-### Books
-
-- **POST** `/api/books` - Create a new book
-- **GET** `/api/books` - Get all books (with filtering and sorting)
-- **GET** `/api/books/:bookId` - Get a specific book by ID
-- **PUT** `/api/books/:bookId` - Update a book
-- **DELETE** `/api/books/:bookId` - Delete a book
-
-### Borrowing
-
-- **POST** `/api/borrow` - Borrow a book
-- **GET** `/api/borrow` - Get borrowed books summary
-
-## 🔧 Usage Examples
-
-### Create a Book
-
-\`\`\`bash
-curl -X POST http://localhost:5000/api/books \\
--H "Content-Type: application/json" \\
--d '{
-"title": "The Theory of Everything",
-"author": "Stephen Hawking",
-"genre": "SCIENCE",
-"isbn": "9780553380163",
-"description": "An overview of cosmology and black holes.",
-"copies": 5
-}'
-\`\`\`
-
-### Get Books with Filtering
-
-\`\`\`bash
-curl "http://localhost:5000/api/books?filter=SCIENCE&sort=desc&limit=5"
-\`\`\`
-
-### Borrow a Book
-
-\`\`\`bash
-curl -X POST http://localhost:5000/api/borrow \\
--H "Content-Type: application/json" \\
--d '{
-"book": "64ab3f9e2a4b5c6d7e8f9012",
-"quantity": 2,
-"dueDate": "2025-07-18T00:00:00.000Z"
-}'
-\`\`\`
-
-## 🏗️ Project Structure
-
-\`\`\`
-src/
-├── app/
-│ ├── controllers/
-│ │ ├── books.controller.ts # Book CRUD operations
-│ │ └── borrow.controller.ts # Borrowing operations
-│ ├── interfaces/
-│ │ └── books.interface.ts # TypeScript interfaces
-│ └── models/
-│ └── books.model.ts # Mongoose models
-├── config/
-│ └── index.ts # Configuration settings
-├── app.ts # Express app setup
-└── server.ts # Server entry point
-\`\`\`
-
-## 🔧 Key Features Implementation
-
-### 1. **Mongoose Static Method**
-
-- `Book.borrowBook()` - Handles borrowing business logic
-
-### 2. **Mongoose Instance Method**
-
-- `book.updateAvailability()` - Updates book availability
-
-### 3. **Mongoose Middleware**
-
-- Pre-save hook to automatically update availability
-
-### 4. **Aggregation Pipeline**
-
-- Groups borrow records by book
-- Sums total borrowed quantities
-- Joins with book details
-
-### 5. **Input Validation**
-
-- Zod schemas for type-safe validation
-- Validator.js for ISBN and ObjectId validation
-
-### 6. **Business Logic**
-
-- Automatic availability updates
-- Copy tracking when borrowing
-- Insufficient copies prevention
-
-## 🧪 Testing
-
-Test the API using tools like Postman, Insomnia, or curl with the examples above.
-
-## 🚀 Deployment
-
-1. **Build the project**
-   \`\`\`bash
-   npm run build
-   \`\`\`
-
-2. **Set environment variables**
-   \`\`\`bash
-   export NODE_ENV=production
-   export MONGODB_URI=your-production-mongodb-uri
-   export PORT=5000
-   \`\`\`
-
-3. **Start production server**
-   \`\`\`bash
-   npm start
-   \`\`\`
-
-## 📝 Environment Variables
-
-| Variable      | Description               | Default                                      |
-| ------------- | ------------------------- | -------------------------------------------- |
-| `PORT`        | Server port               | 5000                                         |
-| `MONGODB_URI` | MongoDB connection string | mongodb://localhost:27017/library-management |
-| `NODE_ENV`    | Environment mode          | development                                  |
-
-## 🛡️ Error Handling
-
-The API provides comprehensive error handling:
-
-- **Validation errors** - Detailed field-specific messages
-- **404 errors** - Resource not found
-- **Business logic errors** - Insufficient copies, etc.
-- **Database errors** - Connection and operation errors
-
-## 📄 License
-
-MIT License
+🌐 **Live Demo**: [library-management-application-beta.vercel.app](https://library-management-application-beta.vercel.app)
 
 ---
 
-**Happy Coding! 🚀**
-\`\`\`
+## 🚀 Features
+
+- ✅ Book creation with strict validation (`title`, `isbn`, `copies`, etc.)
+- ✅ ISBN uniqueness enforced
+- ✅ Genre filtering & sorting
+- ✅ Update & delete book records
+- ✅ Borrow books with quantity validation
+- ✅ Automatically updates book availability and copies
+- ✅ Aggregated summary of total borrowed books
+- ✅ Global error handler and clean response format
+- ✅ Well-structured TypeScript backend
+- ✅ Ready for production with Vercel deployment
+
+---
+
+## 🛠️ Tech Stack
+
+- **Backend:** Express.js + TypeScript
+- **Database:** MongoDB + Mongoose
+- **Validation:** Mongoose + Zod
+- **Dev Tools:** ts-node-dev, ESLint, Prettier
+- **Deployment:** Vercel
+
+---
+
+## 📁 Project Structure
+
+```
+
+src/
+├── app/
+│   └── controllers/         // Route controllers (books, borrow)
+├── models/                  // Mongoose models
+├── interfaces/              // TypeScript interfaces for data types
+├── middlewares/            // Global error handler
+├── config/                  // DB connection logic
+├── errors/                  // Custom AppError class
+├── server.ts                // App entry point
+
+```
+
+---
+
+## 📚 API Endpoints
+
+### 1. 📘 Create a Book
+
+`POST /api/books`
+
+```json
+{
+  "title": "The Theory of Everything",
+  "author": "Stephen Hawking",
+  "genre": "SCIENCE",
+  "isbn": "9780553380163",
+  "description": "An overview of cosmology and black holes.",
+  "copies": 5
+}
+```
+
+✅ **Validations**: ISBN must be unique, genre must be predefined.
+
+---
+
+### 2. 📖 Get All Books
+
+`GET /api/books?filter=SCIENCE&sortBy=title&sort=asc&limit=5`
+
+- Filter by genre
+- Sort by any field
+- Limit results
+
+---
+
+### 3. 🔍 Get Book by ID
+
+`GET /api/books/:bookId`
+
+---
+
+### 4. ✏️ Update a Book
+
+`PATCH /api/books/:bookId`
+
+---
+
+### 5. 🗑️ Delete a Book
+
+`DELETE /api/books/:bookId`
+
+---
+
+### 6. 📦 Borrow a Book
+
+`POST /api/borrow`
+
+```json
+{
+  "book": "64ab3f9e2a4b5c6d7e8f9012",
+  "quantity": 2,
+  "dueDate": "2025-07-18T00:00:00.000Z"
+}
+```
+
+- Checks available copies
+- Reduces count
+- Marks availability `false` if no copies left
+
+---
+
+### 7. 📊 Borrowed Books Summary
+
+`GET /api/borrow`
+
+Returns total borrowed quantities per book:
+
+```json
+[
+  {
+    "book": {
+      "title": "The Theory of Everything",
+      "isbn": "9780553380163"
+    },
+    "totalQuantity": 5
+  }
+]
+```
+
+---
+
+## 🧪 Validation & Error Format
+
+All errors follow this standard format:
+
+```json
+{
+  "message": "Validation failed",
+  "success": false,
+  "error": {
+    "name": "ValidationError",
+    "errors": {
+      "copies": {
+        "message": "Copies must be a non-negative number"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 🧰 Local Setup Instructions
+
+1. **Clone the repo**
+
+```bash
+git clone https://github.com/yourname/library-management-api.git
+cd library-management-api
+```
+
+2. **Install dependencies**
+
+```bash
+npm install
+```
+
+3. **Setup `.env` file**
+
+```env
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/library-management
+```
+
+4. **Run in dev mode**
+
+```bash
+npm run dev
+```
+
+5. **Build for production**
+
+```bash
+npm run build
+```
+
+6. **Start production**
+
+```bash
+npm start
+```
+
+---
+
+## 🔒 Environment Variables
+
+| Key           | Description               |
+| ------------- | ------------------------- |
+| `PORT`        | Port to run server        |
+| `MONGODB_URI` | MongoDB connection string |
+
+---
+
+## 📦 Scripts
+
+| Command          | Description               |
+| ---------------- | ------------------------- |
+| `npm run dev`    | Start in development mode |
+| `npm run build`  | Transpile TS to JS        |
+| `npm start`      | Start production server   |
+| `npm run lint`   | Lint your codebase        |
+| `npm run format` | Auto-format your codebase |
+
+---
+
+## ✅ Deployment
+
+Deployed to **Vercel**
+🔗 [library-management-application-beta.vercel.app](https://library-management-application-beta.vercel.app)
+
+---
+
+## 👨‍💻 Author
+
+**Raufur Islam Nayem** <br>
+📧 [raufurislam@gmail.com](mailto:raufurislam@gmail.com) <br>
+🌐 [Portfolio](https://raufurislam-portfolio.web.app) <br>
+🐱 [GitHub](https://github.com/raufurislam) <br>
