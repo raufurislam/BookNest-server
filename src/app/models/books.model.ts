@@ -37,9 +37,6 @@ const bookSchema = new Schema<IBook>(
   }
 );
 
-// Ensure the unique index is created
-// bookSchema.index({ isbn: 1 }, { unique: true });
-
 bookSchema.statics.borrowBook = async function (
   bookId: string,
   quantity: number

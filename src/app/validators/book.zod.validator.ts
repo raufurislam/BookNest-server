@@ -17,3 +17,5 @@ export const createBookZodSchema = z.object({
   copies: z.number().int().nonnegative(),
   available: z.boolean().optional(),
 });
+
+export const updateBookZodSchema = createBookZodSchema.partial();

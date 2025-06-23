@@ -14,24 +14,18 @@ function asyncHandler(
 }
 
 // create a borrow
+// borrow.controller.ts
+import { createBorrowZodSchema } from "../validators/borrow.zod.validator";
+
 borrowRoutes.post(
   "/",
-  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const { book, quantity, dueDate } = req.body || {};
+  asyncHandler(async (req: Request, res: Response) => {
+    // ✅ Zod validation
+    const parsed = createBorrowZodSchema.safeParse(req.body);
+    if (!parsed.success) throw parsed.error;
 
-    // ✅ Manual check
-    if (!book || !quantity || !dueDate) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required fields",
-        error: {
-          name: "ValidationError",
-          fields: { book, quantity, dueDate },
-        },
-      });
-    }
+    const { book, quantity, dueDate } = parsed.data;
 
-    // ✅ Create borrow record (triggers pre/post hooks)
     const borrowRecord = await Borrow.create({ book, quantity, dueDate });
 
     res.status(201).json({

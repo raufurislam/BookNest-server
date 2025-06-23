@@ -1,80 +1,46 @@
 // books.controller.ts
 import express, { Request, Response, NextFunction } from "express";
 import { Book } from "../models/books.model";
-import { createBookZodSchema } from "../validators/book.zod.validator";
+import {
+  createBookZodSchema,
+  updateBookZodSchema,
+} from "../validators/book.zod.validator";
 import { asyncHandler } from "../../middlewares/asyncHandler";
 
 export const booksRoutes = express.Router();
 
-// booksRoutes.post(
-//   "/",
-//   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const parsed = createBookZodSchema.safeParse(req.body);
-//       if (!parsed.success) {
-//         return res.status(400).json({
-//           message: "Validation failed",
-//           success: false,
-//           error: parsed.error.errors,
-//         });
-//       }
-//       const { isbn } = parsed.data;
-
-//       // Manually check if the ISBN already exists (I tried to handle it in the model but couldn't, so I had to do it manually for now. I will fix it with support after the assignment submission.)
-//       const existingBook = await Book.findOne({ isbn });
-//       if (existingBook) {
-//         return res.status(409).json({
-//           message: "ISBN already exists",
-//           success: false,
-//           error: {
-//             field: "isbn",
-//             value: isbn,
-//           },
-//         });
-//       }
-
-//       const book = await Book.create(parsed.data);
-
-//       res.status(201).json({
-//         success: true,
-//         message: "Book created successfully",
-//         data: book,
-//       });
-//     } catch (err) {
-//       next(err);
-//     }
-//   })
-// );
-
-// Get all books with filtering and sorting
-
 booksRoutes.post(
   "/",
-  asyncHandler(async (req, res) => {
-    const parsed = createBookZodSchema.safeParse(req.body);
-    if (!parsed.success) throw parsed.error;
+  asyncHandler(async (req, res, next) => {
+    try {
+      const parsed = createBookZodSchema.safeParse(req.body);
+      if (!parsed.success) throw parsed.error;
 
-    const { isbn } = parsed.data;
-    const existingBook = await Book.findOne({ isbn });
-    if (existingBook) {
-      throw {
-        name: "DuplicateKeyErrorManual",
-        field: "isbn",
-        value: isbn,
-        message: "ISBN already exists",
-      };
+      const { isbn } = parsed.data; //     // Manually check if the ISBN already exists (I tried to handle it in the model but couldn't, so I had to do it manually for now. I will fix it with support after the assignment submission.)
+      const existingBook = await Book.findOne({ isbn });
+      if (existingBook) {
+        throw {
+          name: "DuplicateKeyError",
+          field: "isbn",
+          value: isbn,
+          message: "ISBN already exists",
+        };
+      }
+
+      const book = await Book.create(parsed.data);
+
+      res.status(201).json({
+        success: true,
+        message: "Book created successfully",
+        data: book,
+      });
+    } catch (err) {
+      next(err);
     }
-
-    const book = await Book.create(parsed.data);
-
-    res.status(201).json({
-      success: true,
-      message: "Book created successfully",
-      data: book,
-    });
   })
 );
 
+// Get all books with filtering and sorting
 booksRoutes.get("/", async (req: Request, res: Response, next) => {
   try {
     const {
@@ -144,11 +110,16 @@ booksRoutes.patch("/:bookId", async (req: Request, res: Response, next) => {
   }
 });
 
-// Update book
-booksRoutes.patch("/:bookId", async (req: Request, res: Response, next) => {
-  try {
+// PATCH: Update book with Zod validation
+booksRoutes.patch(
+  "/:bookId",
+  asyncHandler(async (req, res) => {
+    const parsed = updateBookZodSchema.safeParse(req.body);
+    if (!parsed.success) throw parsed.error;
+
     const bookId = req.params.bookId;
-    const updatedBody = req.body;
+    const updatedBody = parsed.data;
+
     const book = await Book.findByIdAndUpdate(bookId, updatedBody, {
       new: true,
     });
@@ -158,10 +129,8 @@ booksRoutes.patch("/:bookId", async (req: Request, res: Response, next) => {
       message: "Book updated successfully",
       data: book,
     });
-  } catch (err) {
-    next(err);
-  }
-});
+  })
+);
 
 // Delete book
 booksRoutes.delete("/:bookId", async (req: Request, res: Response, next) => {
