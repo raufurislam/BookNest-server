@@ -1,10 +1,6 @@
-// books.controller.ts
 import express, { Request, Response, NextFunction } from "express";
 import { Book } from "../models/books.model";
-import {
-  createBookZodSchema,
-  updateBookZodSchema,
-} from "../validators/book.zod.validator";
+import { createBookZodSchema } from "../validators/book.zod.validator";
 import { asyncHandler } from "../../middlewares/asyncHandler";
 
 export const booksRoutes = express.Router();
@@ -16,7 +12,7 @@ booksRoutes.post(
       const parsed = createBookZodSchema.safeParse(req.body);
       if (!parsed.success) throw parsed.error;
 
-      const { isbn } = parsed.data; //     // Manually check if the ISBN already exists (I tried to handle it in the model but couldn't, so I had to do it manually for now. I will fix it with support after the assignment submission.)
+      const { isbn } = parsed.data; // Manually check if the ISBN already exists (I tried to handle it in the model but couldn't, so I had to do it manually for now. I will fix it on support after the assignment submission.)
       const existingBook = await Book.findOne({ isbn });
       if (existingBook) {
         throw {
@@ -76,7 +72,7 @@ booksRoutes.get("/", async (req: Request, res: Response, next) => {
   }
 });
 
-// Get book by ID
+// Get single book
 booksRoutes.get("/:bookId", async (req: Request, res: Response, next) => {
   try {
     const bookId = req.params.bookId;
@@ -92,25 +88,6 @@ booksRoutes.get("/:bookId", async (req: Request, res: Response, next) => {
 });
 
 // Update book
-// booksRoutes.patch("/:bookId", async (req: Request, res: Response, next) => {
-//   try {
-//     const bookId = req.params.bookId;
-//     const updatedBody = req.body;
-//     const book = await Book.findByIdAndUpdate(bookId, updatedBody, {
-//       new: true,
-//     });
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Book updated successfully",
-//       data: book,
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
-// PUT: Fully replace a book (with validation)
 booksRoutes.put(
   "/:bookId",
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -128,7 +105,7 @@ booksRoutes.put(
 
       // Merge existing data with new data
       const mergedData = {
-        ...existingBook.toObject(), // Convert Mongoose doc to plain object
+        ...existingBook.toObject(),
         ...req.body,
       };
 

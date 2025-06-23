@@ -1,4 +1,4 @@
-# 📚 Library Management API
+# 📚 Library Management Application (Backend)
 
 A robust, TypeScript-powered RESTful API for managing books and borrowing records in a library system. Built with Express.js, MongoDB, and Mongoose.
 
@@ -6,7 +6,7 @@ A robust, TypeScript-powered RESTful API for managing books and borrowing record
 
 ---
 
-## 🚀 Features
+## Features
 
 - ✅ Book creation with strict validation (`title`, `isbn`, `copies`, etc.)
 - ✅ ISBN uniqueness enforced
@@ -21,12 +21,12 @@ A robust, TypeScript-powered RESTful API for managing books and borrowing record
 
 ---
 
-## 🛠️ Tech Stack
+## **Tech Stack**
 
 - **Backend:** Express.js + TypeScript
 - **Database:** MongoDB + Mongoose
 - **Validation:** Mongoose + Zod
-- **Dev Tools:** ts-node-dev, ESLint, Prettier
+- **Dev Tools:** ts-node-dev, ESLint
 - **Deployment:** Vercel
 
 ---
@@ -38,20 +38,21 @@ A robust, TypeScript-powered RESTful API for managing books and borrowing record
 src/
 ├── app/
 │   └── controllers/         // Route controllers (books, borrow)
-├── models/                  // Mongoose models
-├── interfaces/              // TypeScript interfaces for data types
-├── middlewares/            // Global error handler
-├── config/                  // DB connection logic
-├── errors/                  // Custom AppError class
+│   └── models/              // Mongoose models
+│   └── interfaces/          // TypeScript interfaces for data types
+│   └── middlewares/         // Global middleware handler
+│   └── config/              // Secret
+│   └── errors/              // Custom AppError class
+├── app.ts                   // DB connection logic
 ├── server.ts                // App entry point
 
 ```
 
 ---
 
-## 📚 API Endpoints
+## **API Endpoints**
 
-### 1. 📘 Create a Book
+### 1. Create a Book
 
 `POST /api/books`
 
@@ -66,11 +67,11 @@ src/
 }
 ```
 
-✅ **Validations**: ISBN must be unique, genre must be predefined.
+**Validations**: ISBN must be unique, genre must be predefined.
 
 ---
 
-### 2. 📖 Get All Books
+### 2. Get All Books
 
 `GET /api/books?filter=SCIENCE&sortBy=title&sort=asc&limit=5`
 
@@ -80,25 +81,25 @@ src/
 
 ---
 
-### 3. 🔍 Get Book by ID
+### 3. Get Book by ID
 
 `GET /api/books/:bookId`
 
 ---
 
-### 4. ✏️ Update a Book
+### 4. Update a Book
 
-`PATCH /api/books/:bookId`
+`PUT /api/books/:bookId`
 
 ---
 
-### 5. 🗑️ Delete a Book
+### 5. Delete a Book
 
 `DELETE /api/books/:bookId`
 
 ---
 
-### 6. 📦 Borrow a Book
+### 6. Borrow a Book
 
 `POST /api/borrow`
 
@@ -116,27 +117,15 @@ src/
 
 ---
 
-### 7. 📊 Borrowed Books Summary
+### 7. Borrowed Books Summary
 
 `GET /api/borrow`
 
-Returns total borrowed quantities per book:
-
-```json
-[
-  {
-    "book": {
-      "title": "The Theory of Everything",
-      "isbn": "9780553380163"
-    },
-    "totalQuantity": 5
-  }
-]
-```
+Returns total borrowed quantities per book
 
 ---
 
-## 🧪 Validation & Error Format
+## **Validation & Error Format**
 
 All errors follow this standard format:
 
@@ -148,7 +137,16 @@ All errors follow this standard format:
     "name": "ValidationError",
     "errors": {
       "copies": {
-        "message": "Copies must be a non-negative number"
+        "message": "Copies must be a positive number",
+        "name": "ValidatorError",
+        "properties": {
+          "message": "Copies must be a positive number",
+          "type": "min",
+          "min": 0
+        },
+        "kind": "min",
+        "path": "copies",
+        "value": -5
       }
     }
   }
@@ -157,7 +155,7 @@ All errors follow this standard format:
 
 ---
 
-## 🧰 Local Setup Instructions
+## **Local Setup Instructions**
 
 1. **Clone the repo**
 
@@ -199,7 +197,7 @@ npm start
 
 ---
 
-## 🔒 Environment Variables
+## **Environment Variables**
 
 | Key           | Description               |
 | ------------- | ------------------------- |
@@ -208,7 +206,7 @@ npm start
 
 ---
 
-## 📦 Scripts
+## **Scripts**
 
 | Command          | Description               |
 | ---------------- | ------------------------- |
@@ -220,16 +218,16 @@ npm start
 
 ---
 
-## ✅ Deployment
+## **Deployment**
 
 Deployed to **Vercel**
 🔗 [library-management-application-beta.vercel.app](https://library-management-application-beta.vercel.app)
 
 ---
 
-## 👨‍💻 Author
+### 👨‍💻 Author
 
-**Raufur Islam Nayem** <br>
+**Raufur Islam** <br>
 📧 [raufurislam@gmail.com](mailto:raufurislam@gmail.com) <br>
 🌐 [Portfolio](https://raufurislam-portfolio.web.app) <br>
 🐱 [GitHub](https://github.com/raufurislam) <br>

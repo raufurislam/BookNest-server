@@ -1,4 +1,3 @@
-// middlewares/globalErrorHandler.ts
 import { ErrorRequestHandler } from "express";
 import { ZodError } from "zod";
 

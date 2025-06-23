@@ -1,5 +1,3 @@
-// app.ts
-
 import express, { Application, NextFunction, Request, Response } from "express";
 import { booksRoutes } from "./app/controllers/books.controller";
 import { borrowRoutes } from "./app/controllers/borrow.controller";

@@ -1,4 +1,3 @@
-// borrow.controller.ts
 import express, { NextFunction, Request, Response } from "express";
 import { Borrow } from "../models/borrow.model";
 import { createBorrowZodSchema } from "../validators/borrow.zod.validator";
@@ -29,7 +28,7 @@ borrowRoutes.post(
   })
 );
 
-// Summary of all borrowed books
+// all borrowed books
 borrowRoutes.get("/", async (req: Request, res: Response, next) => {
   try {
     const summary = await Borrow.aggregate([

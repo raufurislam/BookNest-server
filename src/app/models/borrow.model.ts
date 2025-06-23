@@ -28,7 +28,7 @@ const borrowSchema = new Schema<IBorrowBooks, BorrowLogicStatic>(
   }
 );
 
-// ✅ Pre-validation hook: check stock before borrow
+// check stock before borrow
 borrowSchema.pre("save", async function (next) {
   const book = await Book.findById(this.book);
   if (!book) throw new Error("Book does not exist!");

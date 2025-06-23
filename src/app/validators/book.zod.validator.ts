@@ -1,4 +1,3 @@
-// validators/book.zod.validator.ts
 import { z } from "zod";
 
 export const createBookZodSchema = z.object({
@@ -18,5 +17,4 @@ export const createBookZodSchema = z.object({
   available: z.boolean().optional(),
 });
 
-// ✅ partial still keeps validation logic!
 export const updateBookZodSchema = createBookZodSchema.partial();
