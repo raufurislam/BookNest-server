@@ -1,62 +1,35 @@
-// books.model.ts
+// models/books.model.ts
 import { model, Schema } from "mongoose";
 import { BookModel, IBook } from "../interfaces/books.interface";
 
 const bookSchema = new Schema<IBook>(
   {
-    title: {
-      type: String,
-      required: [true, "Title is required"],
-      trim: true,
-      maxlength: [200, "Title cannot exceed 200 characters"],
-    },
-    author: {
-      type: String,
-      required: [true, "Author is required"],
-      trim: true,
-      maxlength: [100, "Author name cannot exceed 100 characters"],
-    },
+    title: { type: String, required: true, trim: true, maxlength: 200 },
+    author: { type: String, required: true, trim: true, maxlength: 100 },
     genre: {
       type: String,
-      required: [true, "Genre is required"],
-
-      enum: {
-        values: [
-          "FICTION",
-          "NON_FICTION",
-          "SCIENCE",
-          "HISTORY",
-          "BIOGRAPHY",
-          "FANTASY",
-        ],
-        message:
-          "Genre must be one of: FICTION, NON_FICTION, SCIENCE, HISTORY, BIOGRAPHY, FANTASY",
-      },
+      required: true,
+      enum: [
+        "FICTION",
+        "NON_FICTION",
+        "SCIENCE",
+        "HISTORY",
+        "BIOGRAPHY",
+        "FANTASY",
+      ],
     },
-    isbn: {
-      type: String,
-      required: [true, "ISBN is required"],
-      unique: true,
-      trim: true,
-    },
-    description: {
-      type: String,
-      trim: true,
-      maxlength: [1000, "Description cannot exceed 1000 characters"],
-    },
+    isbn: { type: String, required: true, unique: true, trim: true },
+    description: { type: String, trim: true, maxlength: 1000 },
     copies: {
       type: Number,
-      required: [true, "Copies is required"],
-      min: [0, "Copies must be a non-negative number"],
+      required: true,
+      min: 0,
       validate: {
         validator: Number.isInteger,
         message: "Copies must be an integer",
       },
     },
-    available: {
-      type: Boolean,
-      default: true,
-    },
+    available: { type: Boolean, default: true },
   },
   {
     versionKey: false,
@@ -64,31 +37,20 @@ const bookSchema = new Schema<IBook>(
   }
 );
 
-// ✅ Static method to handle borrow update
+// Ensure the unique index is created
+// bookSchema.index({ isbn: 1 }, { unique: true });
+
 bookSchema.statics.borrowBook = async function (
   bookId: string,
   quantity: number
 ) {
   const book = await this.findById(bookId);
-
-  if (!book) {
-    throw new Error("Book not found");
-  }
-
-  if (book.copies < quantity) {
-    throw new Error("Not enough copies available");
-  }
-
+  if (!book) throw new Error("Book not found");
+  if (book.copies < quantity) throw new Error("Not enough copies");
   book.copies -= quantity;
-
-  if (book.copies === 0) {
-    book.available = false;
-  }
-
+  if (book.copies === 0) book.available = false;
   await book.save();
   return book;
 };
 
 export const Book = model<IBook, BookModel>("Book", bookSchema);
-
-// export const Book = model<IBook>("Note", booksSchema);

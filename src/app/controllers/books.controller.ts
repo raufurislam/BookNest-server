@@ -1,17 +1,40 @@
 // books.controller.ts
 import express, { Request, Response, NextFunction } from "express";
 import { Book } from "../models/books.model";
+import { createBookZodSchema } from "../validators/book.zod.validator";
+import { asyncHandler } from "../../middlewares/asyncHandler";
 
 export const booksRoutes = express.Router();
 
-// Create book
 booksRoutes.post(
   "/",
-  async (req: Request, res: Response, next: NextFunction) => {
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const body = req.body;
+      const parsed = createBookZodSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({
+          message: "Validation failed",
+          success: false,
+          error: parsed.error.errors,
+        });
+      }
 
-      const book = await Book.create(body);
+      const { isbn } = parsed.data;
+
+      // Manually check if the ISBN already exists (I tried to handle it in the model but couldn't, so I had to do it manually for now. I will fix it with support after the assignment submission.)
+      const existingBook = await Book.findOne({ isbn });
+      if (existingBook) {
+        return res.status(409).json({
+          message: "ISBN already exists",
+          success: false,
+          error: {
+            field: "isbn",
+            value: isbn,
+          },
+        });
+      }
+
+      const book = await Book.create(parsed.data);
 
       res.status(201).json({
         success: true,
@@ -21,7 +44,7 @@ booksRoutes.post(
     } catch (err) {
       next(err);
     }
-  }
+  })
 );
 
 // Get all books with filtering and sorting
