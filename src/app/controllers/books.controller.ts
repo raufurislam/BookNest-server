@@ -92,43 +92,83 @@ booksRoutes.get("/:bookId", async (req: Request, res: Response, next) => {
 });
 
 // Update book
-booksRoutes.patch("/:bookId", async (req: Request, res: Response, next) => {
-  try {
-    const bookId = req.params.bookId;
-    const updatedBody = req.body;
-    const book = await Book.findByIdAndUpdate(bookId, updatedBody, {
-      new: true,
-    });
+// booksRoutes.patch("/:bookId", async (req: Request, res: Response, next) => {
+//   try {
+//     const bookId = req.params.bookId;
+//     const updatedBody = req.body;
+//     const book = await Book.findByIdAndUpdate(bookId, updatedBody, {
+//       new: true,
+//     });
 
-    res.status(200).json({
-      success: true,
-      message: "Book updated successfully",
-      data: book,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+//     res.status(200).json({
+//       success: true,
+//       message: "Book updated successfully",
+//       data: book,
+//     });
+//   } catch (err) {
+//     next(err);
+//   }
+// });
 
-// PATCH: Update book with Zod validation
-booksRoutes.patch(
+// PUT: Fully replace a book (with validation)
+booksRoutes.put(
   "/:bookId",
-  asyncHandler(async (req, res) => {
-    const parsed = updateBookZodSchema.safeParse(req.body);
-    if (!parsed.success) throw parsed.error;
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const bookId = req.params.bookId;
 
-    const bookId = req.params.bookId;
-    const updatedBody = parsed.data;
+      // Get existing book
+      const existingBook = await Book.findById(bookId);
+      if (!existingBook) {
+        return res.status(404).json({
+          success: false,
+          message: "Book not found",
+        });
+      }
 
-    const book = await Book.findByIdAndUpdate(bookId, updatedBody, {
-      new: true,
-    });
+      // Merge existing data with new data
+      const mergedData = {
+        ...existingBook.toObject(), // Convert Mongoose doc to plain object
+        ...req.body,
+      };
 
-    res.status(200).json({
-      success: true,
-      message: "Book updated successfully",
-      data: book,
-    });
+      // Validate the merged full object
+      const parsed = createBookZodSchema.safeParse(mergedData);
+      if (!parsed.success) {
+        throw parsed.error;
+      }
+
+      // Check for duplicate ISBN if it's being updated
+      if (req.body.isbn) {
+        const isbnExists = await Book.findOne({
+          isbn: req.body.isbn,
+          _id: { $ne: bookId },
+        });
+        if (isbnExists) {
+          throw {
+            name: "DuplicateKeyError",
+            field: "isbn",
+            value: req.body.isbn,
+            message: "ISBN already exists",
+          };
+        }
+      }
+
+      // Update the document
+      const updatedBook = await Book.findByIdAndUpdate(bookId, parsed.data, {
+        new: true,
+        runValidators: true,
+        overwrite: true,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Book updated successfully",
+        data: updatedBook,
+      });
+    } catch (err) {
+      next(err);
+    }
   })
 );
 

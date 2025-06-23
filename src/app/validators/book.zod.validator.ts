@@ -18,4 +18,5 @@ export const createBookZodSchema = z.object({
   available: z.boolean().optional(),
 });
 
+// ✅ partial still keeps validation logic!
 export const updateBookZodSchema = createBookZodSchema.partial();

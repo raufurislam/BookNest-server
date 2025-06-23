@@ -1,22 +1,12 @@
 // borrow.controller.ts
 import express, { NextFunction, Request, Response } from "express";
 import { Borrow } from "../models/borrow.model";
+import { createBorrowZodSchema } from "../validators/borrow.zod.validator";
+import { asyncHandler } from "../../middlewares/asyncHandler";
 
 export const borrowRoutes = express.Router();
 
-// to wrap async route handlers and forward errors to next()
-function asyncHandler(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
-) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
-}
-
 // create a borrow
-// borrow.controller.ts
-import { createBorrowZodSchema } from "../validators/borrow.zod.validator";
-
 borrowRoutes.post(
   "/",
   asyncHandler(async (req, res, next) => {
