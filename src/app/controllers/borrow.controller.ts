@@ -32,12 +32,15 @@ borrowRoutes.post(
 borrowRoutes.get("/", async (req: Request, res: Response, next) => {
   try {
     const summary = await Borrow.aggregate([
+      // Group borrow records by book ID and sum the quantities
       {
         $group: {
           _id: "$book",
           totalQuantity: { $sum: "$quantity" },
         },
       },
+
+      // Join with the books collection to get book details
       {
         $lookup: {
           from: "books",
@@ -46,9 +49,13 @@ borrowRoutes.get("/", async (req: Request, res: Response, next) => {
           as: "bookInfo",
         },
       },
+
+      // Flatten the joined bookInfo array
       {
         $unwind: "$bookInfo",
       },
+
+      // Format the final output with selected fields
       {
         $project: {
           _id: 0,
@@ -61,6 +68,7 @@ borrowRoutes.get("/", async (req: Request, res: Response, next) => {
       },
     ]);
 
+    // Send the result as JSON response
     res.status(200).json({
       success: true,
       message: "Borrowed books summary retrieved successfully",
