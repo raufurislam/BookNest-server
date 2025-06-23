@@ -19,20 +19,23 @@ import { createBorrowZodSchema } from "../validators/borrow.zod.validator";
 
 borrowRoutes.post(
   "/",
-  asyncHandler(async (req: Request, res: Response) => {
-    // ✅ Zod validation
-    const parsed = createBorrowZodSchema.safeParse(req.body);
-    if (!parsed.success) throw parsed.error;
+  asyncHandler(async (req, res, next) => {
+    try {
+      const parsed = createBorrowZodSchema.safeParse(req.body);
+      if (!parsed.success) throw parsed.error;
 
-    const { book, quantity, dueDate } = parsed.data;
+      const { book, quantity, dueDate } = parsed.data;
 
-    const borrowRecord = await Borrow.create({ book, quantity, dueDate });
+      const borrowRecord = await Borrow.create({ book, quantity, dueDate });
 
-    res.status(201).json({
-      success: true,
-      message: "Book borrowed successfully",
-      data: borrowRecord,
-    });
+      res.status(201).json({
+        success: true,
+        message: "Book borrowed successfully",
+        data: borrowRecord,
+      });
+    } catch (err) {
+      next(err);
+    }
   })
 );
 
