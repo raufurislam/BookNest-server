@@ -4,10 +4,11 @@ import { borrowRoutes } from "./app/controllers/borrow.controller";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 
 import cors from "cors";
+import config from "./config";
 
 const app: Application = express();
 
-app.use(cors({ origin: ["http://localhost:5173"] }));
+app.use(cors({ origin: config.FRONTEND_URL, credentials: true }));
 app.use(express.json());
 
 app.use("/api/books", booksRoutes);

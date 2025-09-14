@@ -6,17 +6,68 @@ import config from "./config";
 
 let server: Server;
 
-async function main() {
+const startServer = async () => {
   try {
-    await mongoose.connect(config.database_url!);
-    console.log("Connected to mongodb using mongoose");
+    if (!config.database_url) {
+      throw new Error("DATABASE_URL is not defined in config");
+    }
+
+    await mongoose.connect(config.database_url);
+    console.log("Connected to DB");
 
     server = app.listen(config.port, () => {
-      console.log(`Example app listening on port ${config.port}`);
+      console.log(`Server is running on port ${config.port}`);
     });
   } catch (error) {
     console.log(error);
+    process.exit(1);
   }
-}
+};
 
-main();
+(async () => {
+  await startServer();
+})();
+
+process.on("unhandledRejection", (err) => {
+  console.log("Unhandled Rejection detected. Sever shutting down...", err);
+
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
+});
+
+process.on("uncaughtException", (err) => {
+  console.log("Uncaught Exception detected. Server is shutting down...", err);
+
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
+});
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM signal received. Server is shutting down");
+
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
+});
+
+process.on("SIGINT", () => {
+  console.log("SIGINT signal received. Server is shutting down");
+
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
+});
