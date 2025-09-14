@@ -1,6 +1,6 @@
 # 📚 Library Management Application (Backend)
 
-A robust, TypeScript-powered RESTful API for managing books and borrowing records in a library system. Built with Express.js, MongoDB, and Mongoose.
+A TypeScript-powered RESTful API for managing books and borrowing records in a library system. Built with Express.js, MongoDB, and Mongoose.
 
 🌐 **Live Demo**: [library-management-application-beta.vercel.app](https://library-management-application-beta.vercel.app)
 
