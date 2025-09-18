@@ -37,80 +37,35 @@ booksRoutes.post(
 );
 
 // Get all books with filtering and sorting
-// booksRoutes.get("/", async (req: Request, res: Response, next) => {
-//   try {
-//     const {
-//       filter,
-//       sortBy = "createdAt",
-//       sort = "desc",
-//       limit = "10",
-//     } = req.query;
-
-//     let query = Book.find();
-
-//     // Apply genre filter
-//     if (filter) {
-//       query = query.where("genre").equals(filter);
-//     }
-
-//     // Apply sorting
-//     const sortOrder = sort === "asc" ? 1 : -1;
-//     query = query.sort({ [sortBy as string]: sortOrder });
-
-//     // Apply limit
-//     query = query.limit(Number.parseInt(limit as string));
-
-//     const books = await query;
-
-//     res.json({
-//       success: true,
-//       message: "Books retrieved successfully",
-//       data: books,
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
 booksRoutes.get("/", async (req: Request, res: Response, next) => {
   try {
     const {
       filter,
       sortBy = "createdAt",
       sort = "desc",
-      page = "1",
       limit = "10",
     } = req.query;
 
-    const pageNum = Number(page);
-    const limitNum = Number(limit);
-    const skip = (pageNum - 1) * limitNum;
-
     let query = Book.find();
 
+    // Apply genre filter
     if (filter) {
       query = query.where("genre").equals(filter);
     }
 
+    // Apply sorting
     const sortOrder = sort === "asc" ? 1 : -1;
     query = query.sort({ [sortBy as string]: sortOrder });
 
-    // 🚀 Apply pagination
-    const [books, total] = await Promise.all([
-      query.skip(skip).limit(limitNum),
-      Book.countDocuments(filter ? { genre: filter } : {}),
-    ]);
+    // Apply limit
+    query = query.limit(Number.parseInt(limit as string));
+
+    const books = await query;
 
     res.json({
       success: true,
       message: "Books retrieved successfully",
       data: books,
-      meta: {
-        total,
-        page: pageNum,
-        limit: limitNum,
-        totalPages: Math.ceil(total / limitNum),
-      },
     });
   } catch (err) {
     next(err);
