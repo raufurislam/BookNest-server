@@ -5,6 +5,7 @@ import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 
 import cors from "cors";
 import config from "./config";
+import { statsRoutes } from "./app/controllers/stats.controller";
 
 const app: Application = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 
 app.use("/api/books", booksRoutes);
 app.use("/api/borrow", borrowRoutes);
+app.use("/api/stats", statsRoutes);
 
 app.use(globalErrorHandler);
 
