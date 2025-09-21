@@ -1,0 +1,219 @@
+{
+  "info": {
+    "_postman_id": "ced88b5e-e262-4df4-82db-df93fb7e49fe",
+    "name": "Book Nest",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "45554881",
+    "_collection_link": "https://raufurislam.postman.co/workspace/raufurislam's-Workspace~f3add14f-0cd0-4018-875f-c9fbff9baba5/collection/45554881-ced88b5e-e262-4df4-82db-df93fb7e49fe?action=share&source=collection_link&creator=45554881"
+  },
+  "item": [
+    {
+      "name": "book",
+      "item": [
+        {
+          "name": "Create book",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Title-1\",\r\n    \"author\": \"Stephen Hawking\",\r\n    \"genre\": \"SCIENCE\",\r\n    \"isbn\": \"97805533801635\",\r\n    \"description\": \"An overview of cosmology and black holes.\",\r\n    \"copies\": 10\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/books",
+              "host": ["{{URL}}"],
+              "path": ["books"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all books",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/books",
+              "host": ["{{URL}}"],
+              "path": ["books"],
+              "query": [
+                {
+                  "key": "filter",
+                  "value": "SCIENCE",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "desc",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get single book",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"The Theory of Everything\",\r\n  \"author\": \"Stephen Hawking\",\r\n  \"genre\": \"SCIENCE\",\r\n  \"isbn\": \"9780553380163\",\r\n  \"description\": \"An overview of cosmology and black holes.\",\r\n  \"copies\": 5,\r\n  \"available\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/books/685575b8c19990d9c08c4020",
+              "host": ["{{URL}}"],
+              "path": ["books", "685575b8c19990d9c08c4020"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update book",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n     \"title\": \"Title-1\",\r\n    \"author\": \"Stephen Hawking\",\r\n    \"genre\": \"SCIENCE\",\r\n    \"isbn\": \"97805533801633\",\r\n    \"description\": \"An overview of cosmology and black holes.\",\r\n    \"copies\": 10\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/books/6859004a9c2246ca74dcdc47",
+              "host": ["{{URL}}"],
+              "path": ["books", "6859004a9c2246ca74dcdc47"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete book",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/books/685575b8c19990d9c08c4020",
+              "host": ["{{URL}}"],
+              "path": ["books", "685575b8c19990d9c08c4020"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "borrow",
+      "item": [
+        {
+          "name": "Create borrow",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"book\": \"685902c243c2e74ebefe4e81\",\r\n    \"quantity\": 9,\r\n    \"dueDate\": \"2025-07-18T00:00:00.000Z\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/borrow",
+              "host": ["{{URL}}"],
+              "path": ["borrow"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "All borrow",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/borrow",
+              "host": ["{{URL}}"],
+              "path": ["borrow"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "stats",
+      "item": [
+        {
+          "name": "stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/stats",
+              "host": ["{{URL}}"],
+              "path": ["stats"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "URL",
+      "value": ""
+    },
+    {
+      "key": "LOCAL",
+      "value": ""
+    }
+  ]
+}
